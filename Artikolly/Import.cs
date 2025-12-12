@@ -197,7 +197,9 @@ CREATE TABLE IF NOT EXISTS `supplies` (
 
         private void button2_Click(object sender, EventArgs e)
         {
-
+            Vostanovlenie vos = new Vostanovlenie();
+            this.Hide();
+            vos.ShowDialog();
         }
 
         private void button3_Click(object sender, EventArgs e)

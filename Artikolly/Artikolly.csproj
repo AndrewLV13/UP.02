@@ -223,6 +223,12 @@
     <Compile Include="UsersADD.Designer.cs">
       <DependentUpon>UsersADD.cs</DependentUpon>
     </Compile>
+    <Compile Include="Vostanovlenie.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Vostanovlenie.Designer.cs">
+      <DependentUpon>Vostanovlenie.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="administrator.resx">
       <DependentUpon>administrator.cs</DependentUpon>
     </EmbeddedResource>
@@ -313,6 +319,11 @@
     <EmbeddedResource Include="UsersADD.resx">
       <DependentUpon>UsersADD.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Vostanovlenie.resx">
+      <DependentUpon>Vostanovlenie.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="dump\Категории для импорта.csv" />
+    <None Include="dump\производители.csv" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -366,6 +377,7 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="dump\dump.sql" />
     <Content Include="icons8-духи-100.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
