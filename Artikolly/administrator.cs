@@ -78,5 +78,13 @@ namespace Artikolly
         {
 
         }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            Import import = new Import();
+
+            import.Show();
+            this.Hide();
+        }
     }
 }
