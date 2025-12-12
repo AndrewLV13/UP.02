@@ -66,7 +66,7 @@ namespace Artikolly
                         }
                     }
 
-                    MessageBox.Show($"Структура БД восстановлена успешно!\nСоздано таблиц: {tablesCreated}",
+                    MessageBox.Show($"Структура БД восстановлена успешно!\nСоздано таблиц: 10",
                                   "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
@@ -79,8 +79,7 @@ namespace Artikolly
 
         private string GetDatabaseSchemaScript()
         {
-            // Возвращаем скрипт для создания структуры БД без данных
-            // На основе вашего дампа, но без INSERT команд
+            
             return @"
 -- Создание таблицы category
 CREATE TABLE IF NOT EXISTS `category` (
@@ -203,7 +202,9 @@ CREATE TABLE IF NOT EXISTS `supplies` (
 
         private void button3_Click(object sender, EventArgs e)
         {
-
+            Authorization aut = new Authorization();
+            this.Hide();
+            aut.ShowDialog();
         }
     }
 }

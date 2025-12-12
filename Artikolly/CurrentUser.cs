@@ -14,5 +14,11 @@ namespace Artikolly
         public static string Patronymic { get; set; }
         public static string Role { get; set; }
         public static string RoleName { get; set; }
+
+        // Метод для проверки, является ли пользователь администратором
+        public static bool IsAdministrator()
+        {
+            return RoleName?.ToLower() == "администратор" || UserID == "0";
+        }
     }
 }

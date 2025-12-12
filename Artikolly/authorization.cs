@@ -3,6 +3,7 @@ using MySql.Data.MySqlClient;
 using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
+using System.Configuration;
 
 namespace Artikolly
 {
@@ -13,6 +14,10 @@ namespace Artikolly
         {
             InitializeComponent();
             textBox2.UseSystemPasswordChar = true;
+            // Для отладки - показываем стандартные логин/пароль в заголовке
+            string adminLogin = ConfigurationManager.AppSettings["AdminLogin"];
+            string adminPass = ConfigurationManager.AppSettings["AdminPass"];
+            this.Text = $"Авторизация (admin: {adminLogin}/{adminPass})";
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -26,13 +31,37 @@ namespace Artikolly
                 return;
             }
 
-            string hashedPassword = HashPassword(password);
+            // 1. Проверка на стандартный логин/пароль из App.config
+            string adminLogin = ConfigurationManager.AppSettings["AdminLogin"];
+            string adminPass = ConfigurationManager.AppSettings["AdminPass"];
 
-            using (MySqlConnection conn = DatabaseHelper.GetConnection())
+            if (login == adminLogin && password == adminPass)
             {
-                try
+                // Устанавливаем данные для админа по умолчанию
+                CurrentUser.UserID = "0";
+                CurrentUser.Surname = "Администратор";
+                CurrentUser.Name = "Системный";
+                CurrentUser.Patronymic = "";
+                CurrentUser.Role = "1"; // Администратор
+                CurrentUser.RoleName = "Администратор";
+
+                MessageBox.Show($"Добро пожаловать, системный администратор!");
+
+                // Открываем форму Import для восстановления/импорта
+                Import importForm = new Import();
+                importForm.Show();
+                this.Hide();
+                return; // Выходим из метода, не проверяем БД
+            }
+
+            // 2. Проверка через БД (если БД существует)
+            try
+            {
+                using (MySqlConnection conn = DatabaseHelper.GetConnection())
                 {
                     conn.Open();
+                    string hashedPassword = HashPassword(password);
+
                     string query = @"
                 SELECT u.UserID, u.UserSurname, u.UserName, u.UserPatronomic, u.Role, r.RoleName
                 FROM `user` u
@@ -74,7 +103,7 @@ namespace Artikolly
                                     break;
                                 default:
                                     MessageBox.Show("Неизвестная роль");
-                                    break;
+                                    return;
                             }
 
                             this.Hide();
@@ -87,12 +116,30 @@ namespace Artikolly
                         }
                     }
                 }
-                catch (Exception ex)
+            }
+            catch (MySqlException mysqlEx)
+            {
+                // Обработка ошибок MySQL (например, БД не существует)
+                if (mysqlEx.Number == 1049) // Ошибка "Unknown database"
                 {
-                    MessageBox.Show("Ошибка подключения к базе данных: " + ex.Message);
+                    MessageBox.Show("База данных не найдена. Пожалуйста, войдите как администратор (admin/admin) для восстановления БД.",
+                                  "Ошибка базы данных", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                    // Предлагаем войти как admin
+                    textBox1.Text = adminLogin;
+                    textBox2.Text = adminPass;
+                }
+                else
+                {
+                    MessageBox.Show("Ошибка подключения к базе данных: " + mysqlEx.Message);
                 }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка: " + ex.Message);
+            }
         }
+        
 
         // Метод для хэширования пароля
         private string HashPassword(string password)
